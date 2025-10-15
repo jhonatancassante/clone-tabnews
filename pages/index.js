@@ -41,8 +41,8 @@ function Home() {
         style={{
             position: 'absolute',
             bottom: '1rem',
-            fontSize: '1rem',
-            color: '#6b7280',
+            fontSize: '.75rem',
+            color: '#afb0b3ff',
         }}
       >
         Select the text on screen to reveal the answer.
