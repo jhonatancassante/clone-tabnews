@@ -3,13 +3,26 @@ function Home() {
     <>
       <style>
         {`
+          .highlightable {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            font-size: 7rem;
+            color: rgba(0, 0, 0, 0.001);
+            z-index: 100;
+            user-select: text;
+            text-align: center;
+          }
           .highlightable::selection {
-            background: black;
-            color: white;
+            background: black !important;
+            color: white !important;
           }
           .highlightable::-moz-selection {
-            background: black;
-            color: white;
+            background: black !important;
+            color: white !important;
           }
         `}
       </style>
@@ -39,18 +52,6 @@ function Home() {
         </div>
         <div
           className="highlightable"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            width: "100%",
-            position: "absolute",
-            fontSize: "7rem",
-            color: "transparent",
-            zIndex: 100,
-            userSelect: "text",
-          }}
         >
           42
         </div>
