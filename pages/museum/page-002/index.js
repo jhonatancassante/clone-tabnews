@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Home() {
+function Page002() {
   const [showMsg, setShowMsg] = useState(false);
 
   return (
@@ -69,4 +69,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Page002;

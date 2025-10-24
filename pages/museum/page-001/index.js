@@ -1,4 +1,4 @@
-function Home() {
+function Page001() {
   return (
     <>
       <style>
@@ -73,4 +73,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Page001;
