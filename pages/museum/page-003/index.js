@@ -20,7 +20,6 @@ function Home() {
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
         height: "100vh",
         width: "100%",
         backgroundColor: "#f3f4f6",
@@ -30,6 +29,11 @@ function Home() {
       {!loaded && !error && (
         <div
           style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
             fontSize: "1rem",
             color: "#111827",
             textAlign: "center",
