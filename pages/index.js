@@ -1,70 +1,87 @@
-import { useState } from "react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 function Home() {
-  const [showMsg, setShowMsg] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  const imagePath = "/ojhow.jpg";
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = imagePath;
+
+    img.onload = () => setLoaded(true);
+    img.onerror = () => setError(true);
+  }, []);
 
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
         height: "100vh",
         width: "100%",
         backgroundColor: "#f3f4f6",
+        transition: "background-color 0.5s ease",
       }}
     >
-      <div
-        style={{
-          fontSize: "2.5rem",
-          textTransform: "uppercase",
-          fontWeight: "bold",
-          color: "#111827",
-          padding: "2.5rem 3rem",
-          backgroundColor: "#fff",
-          borderRadius: "0.375rem",
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-          cursor: "pointer",
-          opacity: showMsg ? 0 : 1,
-          transform: `scale(${showMsg ? 0.95 : 1})`,
-          transition: "all 0.6s ease",
-        }}
-        onClick={() => setShowMsg((prev) => !prev)}
-      >
-        Don't Panic
-      </div>
-      <div
-        style={{
+      {!loaded && !error && (
+        <div
+          style={{
+            fontSize: "1rem",
+            color: "#111827",
+            textAlign: "center",
+            opacity: 0.7,
+          }}
+        >
+          Carregando imagem...
+        </div>
+      )}
+
+      {error && (
+        <div
+          style={{
+            fontSize: "1rem",
+            color: "red",
+            textAlign: "center",
+          }}
+        >
+          Erro ao carregar a imagem.
+        </div>
+      )}
+
+      {loaded && !error && (
+        <div style={{
           display: "flex",
-          justifyContent: "center",
+          position: "relative",
+          flexDirection: "column",
           alignItems: "center",
-          position: "absolute",
-          fontSize: "7rem",
-          color: "white",
-          background: "black",
-          userSelect: "text",
-          textAlign: "center",
-          cursor: "pointer",
-          borderRadius: "0.375rem",
-          padding: "2.5rem 3rem",
-          opacity: showMsg ? 1 : 0,
-          transform: `scale(${showMsg ? 1 : 1.05})`,
-          transition: "all 0.6s ease",
-        }}
-        onClick={() => setShowMsg((prev) => !prev)}
-      >
-        42
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: "1rem",
-          fontSize: ".75rem",
-          color: "#c5c5c5ff",
-        }}
-      >
-        Click the text on screen to reveal the answer.
-      </div>
+        }}>
+          <img
+            src={imagePath}
+            alt="Página do museu"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              borderRadius: "0.5rem",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
+              opacity: loaded ? 1 : 0,
+              transform: loaded ? "scale(1)" : "scale(1.02)",
+              transition: "opacity 1.2s ease, transform 1.2s ease",
+            }}
+          />
+          <div style={{
+            display: "block",
+            marginTop: "1rem",
+            fontSize: "0.9rem",
+            color: "#4b5563",
+            position: "relative",
+          }}>
+            <Link href="mailto:ojhow@ojhow.com.br">ojhow@ojhow.com.br</Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
