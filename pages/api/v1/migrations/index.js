@@ -1,26 +1,35 @@
 import migrationRunner from "node-pg-migrate";
 import { join } from "path";
 import database from "@/infra/database.js";
-import db from "node-pg-migrate/dist/db";
 
 export default async function migrations(request, response) {
   if (!["GET", "POST"].includes(request.method)) {
-    return response.status(405).end();
+    return response.status(405).json({
+      error: `Method ${request.method} not allowed.`,
+    });
   }
 
-  const dbClient = await database.getNewClient();
+  let dbClient;
 
-  const defaultMigrationOptions = {
-    dbClient,
-    dryRun: request.method === "GET",
-    dir: join("infra", "migrations"),
-    direction: "up",
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
+  try {
+    dbClient = await database.getNewClient();
 
-  const migrations = await migrationRunner(defaultMigrationOptions);
-  dbClient.end();
-  const status = request.method === "POST" && migrations.length > 0 ? 201 : 200;
-  return response.status(status).json(migrations);
+    const defaultMigrationOptions = {
+      dbClient,
+      dryRun: request.method === "GET",
+      dir: join("infra", "migrations"),
+      direction: "up",
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
+
+    const migrations = await migrationRunner(defaultMigrationOptions);
+    const status = request.method === "POST" && migrations.length > 0 ? 201 : 200;
+    return response.status(status).json(migrations);
+  } catch (error) {
+    console.error("Error during migrations:", error);
+    throw error;
+  } finally {
+    await dbClient.end();
+  }
 }
