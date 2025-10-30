@@ -57,12 +57,14 @@ function Home() {
       )}
 
       {loaded && !error && (
-        <div style={{
-          display: "flex",
-          position: "relative",
-          flexDirection: "column",
-          alignItems: "center",
-        }}>
+        <div
+          style={{
+            display: "flex",
+            position: "relative",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <img
             src={imagePath}
             alt="Página do museu"
@@ -76,13 +78,15 @@ function Home() {
               transition: "opacity 1.2s ease, transform 1.2s ease",
             }}
           />
-          <div style={{
-            display: "block",
-            marginTop: "1rem",
-            fontSize: "0.9rem",
-            color: "#4b5563",
-            position: "relative",
-          }}>
+          <div
+            style={{
+              display: "block",
+              marginTop: "1rem",
+              fontSize: "0.9rem",
+              color: "#4b5563",
+              position: "relative",
+            }}
+          >
             <Link href="mailto:ojhow@ojhow.com.br">ojhow@ojhow.com.br</Link>
           </div>
         </div>

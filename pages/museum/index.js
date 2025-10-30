@@ -14,13 +14,15 @@ function Museum() {
       id: "001",
       title: "Primeira versão da página inicial",
       date: "23 de Outubro de 2025",
-      description: "O início de tudo — simples, mas com uma brincadeira escondida.",
+      description:
+        "O início de tudo — simples, mas com uma brincadeira escondida.",
     },
     {
       id: "002",
       title: "Segunda versão da página inicial",
       date: "24 de Outubro de 2025",
-      description: "Evolução funcional da bricadeira para ter compatibilidade no IOs.",
+      description:
+        "Evolução funcional da bricadeira para ter compatibilidade no IOs.",
     },
     {
       id: "003",
@@ -64,8 +66,8 @@ function Museum() {
           lineHeight: "1.6",
         }}
       >
-        Aqui estão preservadas as versões antigas da página inicial —
-        um registro das mudanças, do progresso e da beleza do tempo.
+        Aqui estão preservadas as versões antigas da página inicial — um
+        registro das mudanças, do progresso e da beleza do tempo.
       </p>
 
       <div
