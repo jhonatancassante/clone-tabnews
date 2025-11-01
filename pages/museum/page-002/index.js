@@ -31,7 +31,7 @@ function Page002() {
         }}
         onClick={() => setShowMsg((prev) => !prev)}
       >
-        Don't Panic
+        Don&apos;t Panic
       </div>
       <div
         style={{

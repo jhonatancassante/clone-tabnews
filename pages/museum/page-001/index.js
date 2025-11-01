@@ -53,7 +53,7 @@ function Page001() {
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
           }}
         >
-          Don't Panic
+          Don&apos;t Panic
         </div>
 
         <div className="highlightable">42</div>
