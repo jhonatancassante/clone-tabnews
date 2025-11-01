@@ -7,7 +7,7 @@ export default function Home() {
     async function fetchQuote() {
       let res;
       try {
-        res = await fetch("/100_quotes.json");
+        res = await fetch("/quotes.json");
         const data = await res.json();
         if (data.length > 0) {
           const randomIndex = Math.floor(Math.random() * data.length);
