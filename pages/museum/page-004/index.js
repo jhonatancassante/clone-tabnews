@@ -1,4 +1,3 @@
-// pages/index.js
 export default function UnderConstruction() {
   return (
     <main className="wrap" role="main" aria-labelledby="title">

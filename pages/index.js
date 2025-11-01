@@ -5,8 +5,9 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchQuote() {
+      let res;
       try {
-        const res = await fetch("/100_quotes.json");
+        res = await fetch("/100_quotes.json");
         const data = await res.json();
         if (data.length > 0) {
           const randomIndex = Math.floor(Math.random() * data.length);
@@ -14,6 +15,13 @@ export default function Home() {
         }
       } catch (err) {
         console.error("Erro ao carregar as citações:", err);
+        setQuote({
+          id: 0,
+          emogi: "❗",
+          quote: "Não foi possível carregar a citação.",
+          autor: "Sistema",
+          error: res.status,
+        });
       }
     }
 
@@ -25,7 +33,8 @@ export default function Home() {
       {quote ? (
         <div className="quote-card">
           <p className="quote-text">
-            {quote.id}. {quote.emoji} &quot;{quote.quote}&quot;
+            {quote.id ? `${quote.id}.` : `Erro ${quote.error}:`} {quote.emoji}{" "}
+            &quot;{quote.quote}&quot;
           </p>
           <p className="quote-author">— {quote.autor}</p>
         </div>
