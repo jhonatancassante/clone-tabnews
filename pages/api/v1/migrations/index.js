@@ -25,7 +25,8 @@ export default async function migrations(request, response) {
     };
 
     const migrations = await migrationRunner(defaultMigrationOptions);
-    const status = request.method === "POST" && migrations.length > 0 ? 201 : 200;
+    const status =
+      request.method === "POST" && migrations.length > 0 ? 201 : 200;
     return response.status(status).json(migrations);
   } catch (error) {
     console.error("Error during migrations:", error);
