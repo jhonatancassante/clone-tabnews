@@ -12,7 +12,7 @@
     "build": "next build",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
-    "lint:eslint:check": "eslint --max-warnings=0 .",
+    "lint:eslint:check": "eslint --max-warnings=0 . --ignore-pattern package.json --ignore-pattern package-lock.json",
     "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
     "test:watch": "jest --watchAll --runInBand",
     "migration:create": "node-pg-migrate -m infra/migrations create",
@@ -23,11 +23,7 @@
   "author": "",
   "license": "MIT",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,css,md}": [
-      "npm run lint:prettier:fix",
-      "eslint --max-warnings=0"
-    ],
-    "!(package|package-lock).json": [
+    "*.{js,jsx,ts,tsx,css,json,md}": [
       "npm run lint:prettier:fix",
       "eslint --max-warnings=0"
     ]
