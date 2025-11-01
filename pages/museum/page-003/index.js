@@ -1,19 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-function Home() {
+function Page003() {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
   const imagePath = "/ojhow.jpg";
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = imagePath;
-
-    img.onload = () => setLoaded(true);
-    img.onerror = () => setError(true);
-  }, []);
 
   return (
     <div
@@ -56,27 +49,32 @@ function Home() {
         </div>
       )}
 
-      {loaded && !error && (
+      {!error && (
         <div
           style={{
-            display: "flex",
+            display: loaded ? "flex" : "none",
             position: "relative",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <img
+          <Image
             src={imagePath}
             alt="Página do museu"
+            width={200}
+            height={300}
+            onLoadingComplete={() => setLoaded(true)}
+            onError={() => setError(true)}
             style={{
-              maxWidth: "90%",
-              maxHeight: "90%",
+              width: "auto",
+              height: "90%",
               borderRadius: "0.5rem",
               boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
               opacity: loaded ? 1 : 0,
               transform: loaded ? "scale(1)" : "scale(1.02)",
               transition: "opacity 1.2s ease, transform 1.2s ease",
             }}
+            priority
           />
           <div
             style={{
@@ -95,4 +93,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Page003;
