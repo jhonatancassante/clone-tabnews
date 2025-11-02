@@ -114,8 +114,11 @@ export default function UnderConstruction() {
           width: 14px;
           height: 14px;
           border-radius: 50%;
-          background:
-            radial-gradient(circle at 30% 30%, #fff, rgba(255, 255, 255, 0.6)),
+          background: radial-gradient(
+              circle at 30% 30%,
+              #fff,
+              rgba(255, 255, 255, 0.6)
+            ),
             linear-gradient(180deg, #ffd6a5, #fb7185);
           box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
           opacity: 0.95;
