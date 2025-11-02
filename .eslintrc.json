@@ -10,5 +10,9 @@
   "rules": {
     "no-secrets/no-secrets": "error"
   },
-  "ignorePatterns": ["package.json", "package-lock.json", "node_modules/"]
+  "ignorePatterns": ["package.json", "package-lock.json", "node_modules/"],
+  "env": {
+    "es2021": true,
+    "node": true
+  }
 }
