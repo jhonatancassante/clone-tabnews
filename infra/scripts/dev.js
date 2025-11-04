@@ -1,4 +1,4 @@
-import { runScript } from "./spawn.js";
+const { runScript } = require("./spawn.js");
 
 (async function main() {
   runScript("dev:raw", {
