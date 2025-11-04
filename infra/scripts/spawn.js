@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+const { spawn } = require("node:child_process");
 
 function npmBin() {
   return process.platform === "win32" ? "npm.cmd" : "npm";
@@ -48,7 +48,7 @@ async function cleanServices() {
   });
 }
 
-export function runScript(script, options = {}) {
+function runScript(script, options = {}) {
   const { cleanup, afterExit } = options;
   let cleanupCalled = false;
 
@@ -80,3 +80,5 @@ export function runScript(script, options = {}) {
 
   return proc;
 }
+
+module.exports = { runScript };
