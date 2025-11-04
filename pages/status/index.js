@@ -31,22 +31,64 @@ function StatusPage() {
 export default StatusPage;
 
 function Loading() {
+  const overlayStyle = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 9999,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  const backdropStyle = {
+    position: "absolute",
+    inset: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backdropFilter: "blur(4px)",
+  };
+
+  const containerStyle = {
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+    padding: "24px 32px",
+    borderRadius: "16px",
+  };
+
+  const spinnerStyle = {
+    width: "48px",
+    height: "48px",
+    border: "4px solid rgba(255, 255, 255, 0.3)",
+    borderTopColor: "#fff",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  };
+
+  const textStyle = {
+    color: "#fff",
+    fontSize: "18px",
+    fontWeight: 500,
+  };
+
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="fixed inset-0 z-50 flex items-center justify-center"
-    >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+    <div role="status" aria-live="polite" style={overlayStyle}>
+      <div style={backdropStyle} />
 
-      <div className="relative flex flex-col items-center gap-3 px-6 py-8 rounded-2xl">
-        <div
-          className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-white"
-          aria-hidden="true"
-        />
-
-        <span className="text-white text-lg font-medium">Carregando...</span>
+      <div style={containerStyle}>
+        <div style={spinnerStyle} aria-hidden="true" />
+        <span style={textStyle}>Carregando...</span>
       </div>
+
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 }
