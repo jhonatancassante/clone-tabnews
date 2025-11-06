@@ -4,7 +4,6 @@ import database from "@/infra/database.js";
 import { ServiceError } from "@/infra/errors";
 
 const defaultMigrationOptions = {
-  dryRun: true,
   dir: resolve("infra", "migrations"),
   direction: "up",
   verbose: true,
