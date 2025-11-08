@@ -18,8 +18,7 @@ describe("GET /api/v1/users/[username]", () => {
         body: JSON.stringify({
           username: "MesmoCase",
           email: "mesmo.case@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -36,8 +35,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: response2Body.id,
         username: "MesmoCase",
         email: "mesmo.case@live.com",
-        // ggignore
-        password: "tesTe123",
+        password: process.env.TEST_PASSWORD,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -56,8 +54,7 @@ describe("GET /api/v1/users/[username]", () => {
         body: JSON.stringify({
           username: "CaseDiferente",
           email: "case.diferente@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -74,8 +71,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: response2Body.id,
         username: "CaseDiferente",
         email: "case.diferente@live.com",
-        // ggignore
-        password: "tesTe123",
+        password: process.env.TEST_PASSWORD,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });

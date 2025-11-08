@@ -18,8 +18,7 @@ describe("POST /api/v1/users", () => {
         body: JSON.stringify({
           username: "jhonatanjb",
           email: "jhonatan.cassante@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -30,8 +29,7 @@ describe("POST /api/v1/users", () => {
         id: responseBody.id,
         username: "jhonatanjb",
         email: "jhonatan.cassante@live.com",
-        // ggignore
-        password: "tesTe123",
+        password: process.env.TEST_PASSWORD,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -50,8 +48,7 @@ describe("POST /api/v1/users", () => {
         body: JSON.stringify({
           username: "emailduplicado1",
           email: "duplicado@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -65,8 +62,7 @@ describe("POST /api/v1/users", () => {
         body: JSON.stringify({
           username: "emailduplicado2",
           email: "Duplicado@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -91,8 +87,7 @@ describe("POST /api/v1/users", () => {
         body: JSON.stringify({
           username: "usernameduplicado",
           email: "username1@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
@@ -106,8 +101,7 @@ describe("POST /api/v1/users", () => {
         body: JSON.stringify({
           username: "UsernameDuplicado",
           email: "username2@live.com",
-          // ggignore
-          password: "tesTe123",
+          password: process.env.TEST_PASSWORD,
         }),
       });
 
