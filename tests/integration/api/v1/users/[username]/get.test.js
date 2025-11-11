@@ -35,7 +35,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: response2Body.id,
         username: "MesmoCase",
         email: "mesmo.case@live.com",
-        password: process.env.TEST_PASSWORD,
+        password: response2Body.password,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -71,7 +71,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: response2Body.id,
         username: "CaseDiferente",
         email: "case.diferente@live.com",
-        password: process.env.TEST_PASSWORD,
+        password: response2Body.password,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
       });
@@ -91,8 +91,8 @@ describe("GET /api/v1/users/[username]", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "O nome de usuário não foi encontrado no sistema.",
-        action: "Verificque se o nome de usuário foi digitado corretamente.",
+        message: "O username não foi encontrado no sistema.",
+        action: "Verifique se o username foi digitado corretamente.",
         status_code: 404,
       });
     });
