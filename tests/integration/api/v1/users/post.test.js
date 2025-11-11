@@ -128,8 +128,8 @@ describe("POST /api/v1/users", () => {
 
       expect(response2Body).toEqual({
         name: "ValidationError",
-        message: "O nome de usuário informado já está sendo utilizado.",
-        action: "Utilize outro nome de usuário para realizar essa operação.",
+        message: "O username informado já está sendo utilizado.",
+        action: "Utilize outro username para realizar essa operação.",
         status_code: 400,
       });
     });
@@ -152,8 +152,8 @@ describe("POST /api/v1/users", () => {
       const response1Body = await response1.json();
       expect(response1Body).toEqual({
         name: "ValidationError",
-        message: `O campo nome de usuário é obrigatório.`,
-        action: `Forneça um campo nome de usuário válido para realizar essa operação.`,
+        message: `O campo username é obrigatório.`,
+        action: `Forneça um campo username válido para realizar essa operação.`,
         status_code: 400,
       });
 
@@ -174,8 +174,8 @@ describe("POST /api/v1/users", () => {
       const response2Body = await response2.json();
       expect(response2Body).toEqual({
         name: "ValidationError",
-        message: `O campo nome de usuário é obrigatório.`,
-        action: `Forneça um campo nome de usuário válido para realizar essa operação.`,
+        message: `O campo username é obrigatório.`,
+        action: `Forneça um campo username válido para realizar essa operação.`,
         status_code: 400,
       });
     });

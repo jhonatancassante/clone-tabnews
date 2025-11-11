@@ -91,8 +91,8 @@ describe("GET /api/v1/users/[username]", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         name: "NotFoundError",
-        message: "O nome de usuário não foi encontrado no sistema.",
-        action: "Verificque se o nome de usuário foi digitado corretamente.",
+        message: "O username não foi encontrado no sistema.",
+        action: "Verifique se o username foi digitado corretamente.",
         status_code: 404,
       });
     });
