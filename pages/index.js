@@ -9,12 +9,20 @@ export default function Home() {
       try {
         res = await fetch("/api/v1/quotes");
         const data = await res.json();
-        console.log(data);
-        setQuote(data);
+        if (data?.status_code) {
+          throw data;
+        } else {
+          setQuote(data);
+        }
       } catch (err) {
-        console.error("Erro ao carregar as citações:", err);
+        console.error(`
+          Erro ao carregar as citações:
+            Erro: ${err.name}
+            Mensagem: ${err.message}
+            Status: ${err.status_code}
+          `);
         setQuote({
-          id: 0,
+          id: "",
           emogi: "❗",
           quote: "Não foi possível carregar a citação.",
           autor: "Sistema",
