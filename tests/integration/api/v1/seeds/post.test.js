@@ -21,6 +21,7 @@ describe("POST /api/v1/seeds", () => {
         const responseBody = await response.json();
 
         expect(responseBody.message).toBe("All Quotes ran successfully.");
+        expect(responseBody.quotesCount).toBeGreaterThan(0);
       });
 
       test("For the second time", async () => {
@@ -35,7 +36,6 @@ describe("POST /api/v1/seeds", () => {
         const responseBody = await response.json();
 
         expect(responseBody.message).toBe("Quotes have already been run.");
-        expect(responseBody.quotesCount).toBeGreaterThan(0);
       });
     });
   });

@@ -4,6 +4,7 @@ import { faker } from "@faker-js/faker";
 import database from "@/infra/database.js";
 import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
+import seeder from "@/models/seeder";
 
 async function waitForAllServices() {
   await waitForWebService();
@@ -32,6 +33,10 @@ async function runPendingMigrations() {
   await migrator.runPendingMigrations(true);
 }
 
+async function runQuotesSeeder() {
+  await seeder.runQuotesSeed(true);
+}
+
 async function createUser(userObject) {
   return await user.create({
     username:
@@ -45,6 +50,7 @@ const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
+  runQuotesSeeder,
   createUser,
 };
 
