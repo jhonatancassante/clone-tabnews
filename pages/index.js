@@ -7,12 +7,10 @@ export default function Home() {
     async function fetchQuote() {
       let res;
       try {
-        res = await fetch("/quotes.json");
+        res = await fetch("/api/v1/quotes");
         const data = await res.json();
-        if (data.length > 0) {
-          const randomIndex = Math.floor(Math.random() * data.length);
-          setQuote(data[randomIndex]);
-        }
+        console.log(data);
+        setQuote(data);
       } catch (err) {
         console.error("Erro ao carregar as citações:", err);
         setQuote({
@@ -33,10 +31,11 @@ export default function Home() {
       {quote ? (
         <div className="quote-card">
           <p className="quote-text">
-            {quote.id ? `${quote.id}.` : `Erro ${quote.error}:`} {quote.emoji}{" "}
-            &quot;{quote.quote}&quot;
+            {quote.id ? `` : `Erro ${quote.error}:`} {quote.emoji} &quot;
+            {quote.quote}&quot;
           </p>
           <p className="quote-author">— {quote.autor}</p>
+          <p className="quote-id">{quote.id}</p>
         </div>
       ) : (
         <p className="loading">Carregando frase...</p>
@@ -69,6 +68,12 @@ export default function Home() {
 
         .quote-author {
           font-size: 1rem;
+          color: #4b5563;
+        }
+
+        .quote-id {
+          padding-top: 0.75rem;
+          font-size: 0.5rem;
           color: #4b5563;
         }
 
