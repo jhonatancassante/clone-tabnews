@@ -322,8 +322,6 @@ describe("PATCH /api/v1/users/[username]", () => {
     test("With new 'password'", async () => {
       const newUser = await orchestrator.createUser();
 
-      console.log(newUser.username);
-
       const response = await fetch(
         `http://localhost:3000/api/v1/users/${newUser.username}`,
         {
@@ -340,8 +338,6 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
-
-      console.log(responseBody);
 
       expect(responseBody).toEqual({
         id: responseBody.id,
