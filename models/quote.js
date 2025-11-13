@@ -54,10 +54,34 @@ async function getOneRandomQuote() {
   }
 }
 
+async function getOneQuoteById(id) {
+  const quoteById = await runGetOneQuoteById();
+  return quoteById;
+
+  async function runGetOneQuoteById() {
+    const results = await database.query({
+      text: `
+      SELECT
+        *
+      FROM
+        quotes
+      WHERE
+        id = $1
+      LIMIT
+        1
+    ;`,
+      values: [id],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const quote = {
   create,
   verify,
   getOneRandomQuote,
+  getOneQuoteById,
 };
 
 export default quote;
