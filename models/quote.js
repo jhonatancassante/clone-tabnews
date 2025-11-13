@@ -34,9 +34,30 @@ async function verify() {
   }
 }
 
+async function getOneRandomQuote() {
+  const randomQuote = await runGetOneRandomQuote();
+  return randomQuote;
+
+  async function runGetOneRandomQuote() {
+    const results = await database.query(`
+      SELECT
+        *
+      FROM
+        quotes
+      ORDER BY
+        RANDOM()
+      LIMIT
+        1
+    ;`);
+
+    return results.rows[0];
+  }
+}
+
 const quote = {
   create,
   verify,
+  getOneRandomQuote,
 };
 
 export default quote;
