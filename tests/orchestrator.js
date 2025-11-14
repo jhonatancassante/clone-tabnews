@@ -6,6 +6,8 @@ import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
 import seeder from "@/models/seeder";
 
+const apiBaseUrl = "http://localhost:3000/api/v1";
+
 async function waitForAllServices() {
   await waitForWebService();
 
@@ -47,6 +49,7 @@ async function createUser(userObject) {
 }
 
 const orchestrator = {
+  apiBaseUrl,
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
