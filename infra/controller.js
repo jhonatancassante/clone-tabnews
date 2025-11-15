@@ -31,7 +31,7 @@ function onErrorHandler(error, request, response) {
   return response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
-async function setSessionCookie(sessionToken, response) {
+function setSessionCookie(sessionToken, response) {
   const setCookie = cookie.serialize("session_id", sessionToken, {
     path: "/",
     httpOnly: true,
