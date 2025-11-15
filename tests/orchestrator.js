@@ -5,6 +5,9 @@ import database from "@/infra/database.js";
 import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
 import seeder from "@/models/seeder";
+import session from "@/models/session";
+
+const apiBaseUrl = "http://localhost:3000/api/v1";
 
 async function waitForAllServices() {
   await waitForWebService();
@@ -46,12 +49,18 @@ async function createUser(userObject) {
   });
 }
 
+async function createSession(userId) {
+  return await session.create(userId);
+}
+
 const orchestrator = {
+  apiBaseUrl,
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
   runQuotesSeeder,
   createUser,
+  createSession,
 };
 
 export default orchestrator;

@@ -1,6 +1,8 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
 
+const quotesUrl = `${orchestrator.apiBaseUrl}/quotes`;
+
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
   await orchestrator.clearDatabase();
@@ -11,24 +13,24 @@ beforeAll(async () => {
 describe("GET /api/v1/quotes", () => {
   describe("Anonymous user", () => {
     test("Retrive one random quote", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/quotes");
+      const response = await fetch(quotesUrl);
+      const quoteBody = await response.json();
 
       expect(response.status).toBe(200);
+      expect(quoteBody).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          emoji: expect.any(String),
+          quote: expect.any(String),
+          autor: expect.any(String),
+          created_at: expect.any(String),
+          updated_at: expect.any(String),
+        }),
+      );
 
-      const responseBody = await response.json();
-
-      expect(responseBody).toEqual({
-        id: responseBody.id,
-        emoji: responseBody.emoji,
-        quote: responseBody.quote,
-        autor: responseBody.autor,
-        created_at: responseBody.created_at,
-        updated_at: responseBody.updated_at,
-      });
-
-      expect(uuidVersion(responseBody.id)).toBe(4);
-      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+      expect(uuidVersion(quoteBody.id)).toBe(4);
+      expect(Date.parse(quoteBody.created_at)).not.toBeNaN();
+      expect(Date.parse(quoteBody.updated_at)).not.toBeNaN();
     });
   });
 });
