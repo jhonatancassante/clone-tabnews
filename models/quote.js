@@ -1,4 +1,5 @@
 import database from "@/infra/database.js";
+import { NotFoundError } from "@/infra/errors.js";
 
 async function create(quoteInputValues) {
   const newQuote = await runInsertQuery(quoteInputValues);
@@ -55,10 +56,11 @@ async function getOneRandomQuote() {
 }
 
 async function getOneQuoteById(id) {
-  const quoteById = await runGetOneQuoteById();
-  return quoteById;
+  const quoteFound = await runSelectQuery();
 
-  async function runGetOneQuoteById() {
+  return quoteFound;
+
+  async function runSelectQuery() {
     const results = await database.query({
       text: `
       SELECT
@@ -72,6 +74,13 @@ async function getOneQuoteById(id) {
     ;`,
       values: [id],
     });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "A citação não foi encontrada no sistema.",
+        action: "Verifique se o ID da citação foi digitado corretamente.",
+      });
+    }
 
     return results.rows[0];
   }

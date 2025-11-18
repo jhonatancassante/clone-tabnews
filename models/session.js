@@ -1,11 +1,12 @@
 import crypto from "node:crypto";
 import database from "@/infra/database.js";
+import { UnauthorizedError } from "@/infra/errors.js";
 
 const EXPIRATION_IN_MILISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 dias
 
 async function create(userId) {
   const token = crypto.randomBytes(48).toString("hex");
-  const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILISECONDS);
+  const expiresAt = calculateExpirationDate();
 
   const newSession = await runInsertQuery(token, userId, expiresAt);
   return newSession;
@@ -27,9 +28,71 @@ async function create(userId) {
   }
 }
 
+async function findOneValidByToken(token) {
+  const sessionFound = await runSelectQuery(token);
+
+  return sessionFound;
+
+  async function runSelectQuery(token) {
+    const results = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          sessions
+        WHERE
+          token = $1
+          AND expires_at > NOW()
+        LIMIT 1
+      ;`,
+      values: [token],
+    });
+
+    if (results.rowCount === 0) {
+      throw new UnauthorizedError({
+        message: "Sessão inválida ou expirada.",
+        action: "Faça login novamente para obter uma nova sessão.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
+async function renew(sessionId) {
+  const newExpiresAt = calculateExpirationDate();
+  const renewedSession = await runUpdateQuery(sessionId, newExpiresAt);
+  return renewedSession;
+
+  async function runUpdateQuery(sessionId, newExpiresAt) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          sessions
+        SET
+          expires_at = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+      ;`,
+      values: [sessionId, newExpiresAt],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const session = {
-  create,
   EXPIRATION_IN_MILISECONDS,
+  create,
+  findOneValidByToken,
+  renew,
 };
 
 export default session;
+
+function calculateExpirationDate() {
+  return new Date(Date.now() + EXPIRATION_IN_MILISECONDS);
+}
