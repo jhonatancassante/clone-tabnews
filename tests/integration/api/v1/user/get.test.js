@@ -152,6 +152,20 @@ describe("GET /api/v1/user", () => {
         action: "Faça login novamente para obter uma nova sessão.",
         status_code: 401,
       });
+
+      // Set-Cookies assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
+        sameSite: "Lax",
+      });
     });
 
     test("With expired session", async () => {
@@ -181,6 +195,20 @@ describe("GET /api/v1/user", () => {
         message: "Sessão inválida ou expirada.",
         action: "Faça login novamente para obter uma nova sessão.",
         status_code: 401,
+      });
+
+      // Set-Cookies assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
+        sameSite: "Lax",
       });
     });
   });
