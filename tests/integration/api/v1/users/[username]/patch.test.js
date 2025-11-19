@@ -274,7 +274,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         username: "uniqueUser2",
         email: newUser.email,
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -310,7 +310,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         username: newUser.username,
         email: "uniqueEmail2@live.com",
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -346,7 +346,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         username: newUser.username,
         email: newUser.email,
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -398,7 +398,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         username: "UpdateNoMatchCaseUsername",
         email: newUser.email,
         password: responseBody.password,
-        features: [],
+        features: ["read:activation_token"],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
