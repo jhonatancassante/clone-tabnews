@@ -1,3 +1,4 @@
+import activation from "@/models/activation";
 import orchestrator from "@/tests/orchestrator.js";
 
 beforeAll(async () => {
@@ -8,6 +9,8 @@ beforeAll(async () => {
 });
 
 describe("Use case: Registration Flow (all successful)", () => {
+  let createUserResponseBody;
+
   test("Create user account", async () => {
     const createUserResponse = await fetch(
       "http://localhost:3000/api/v1/users",
@@ -23,7 +26,7 @@ describe("Use case: Registration Flow (all successful)", () => {
         }),
       },
     );
-    const createUserResponseBody = await createUserResponse.json();
+    createUserResponseBody = await createUserResponse.json();
 
     expect(createUserResponse.status).toBe(201);
     expect(createUserResponseBody).toEqual({
@@ -37,7 +40,19 @@ describe("Use case: Registration Flow (all successful)", () => {
     });
   });
 
-  //TODO test("Receive activation e-mail", async () => {});
+  test("Receive activation e-mail", async () => {
+    const lastEmail = await orchestrator.getLastEmail();
+
+    const activationToken = await activation.findOneByUserId(
+      createUserResponseBody.id,
+    );
+
+    expect(lastEmail.sender).toBe("<contato@ojhow.com.br>");
+    expect(lastEmail.recipients[0]).toBe("<registration.flow@test.com>");
+    expect(lastEmail.subject).toBe("Ative seu cadastro em O Jhow!");
+    expect(lastEmail.text).toContain("RegistrationFlow");
+    expect(lastEmail.text).toContain(activationToken.id);
+  });
 
   //TODO test("Activate account", async () => {});
 
