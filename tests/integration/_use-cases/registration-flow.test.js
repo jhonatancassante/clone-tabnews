@@ -1,6 +1,7 @@
-import activation from "@/models/activation";
+import activation from "@/models/activation.js";
 import orchestrator from "@/tests/orchestrator.js";
 import webserver from "@/infra/webserver.js";
+import user from "@/models/user";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -11,22 +12,20 @@ beforeAll(async () => {
 
 describe("Use case: Registration Flow (all successful)", () => {
   let createUserResponseBody;
+  let activationTokenId;
 
   test("Create user account", async () => {
-    const createUserResponse = await fetch(
-      "http://localhost:3000/api/v1/users",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: "RegistrationFlow",
-          email: "registration.flow@test.com",
-          password: process.env.TEST_PASSWORD,
-        }),
+    const createUserResponse = await fetch(`${webserver.origin}/api/v1/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        username: "RegistrationFlow",
+        email: "registration.flow@test.com",
+        password: process.env.TEST_PASSWORD,
+      }),
+    });
     createUserResponseBody = await createUserResponse.json();
 
     expect(createUserResponse.status).toBe(201);
@@ -43,7 +42,7 @@ describe("Use case: Registration Flow (all successful)", () => {
 
   test("Receive activation e-mail", async () => {
     const lastEmail = await orchestrator.getLastEmail();
-    const activationTokenId = orchestrator.extractUUID(lastEmail.text);
+    activationTokenId = orchestrator.extractUUID(lastEmail.text);
     const userActivationToken =
       await activation.findOneValidById(activationTokenId);
 
@@ -58,7 +57,21 @@ describe("Use case: Registration Flow (all successful)", () => {
     expect(userActivationToken.used_at).toBe(null);
   });
 
-  //TODO test("Activate account", async () => {});
+  test("Activate account", async () => {
+    const activationResponse = await fetch(
+      `${webserver.origin}/api/v1/activations/${activationTokenId}`,
+      {
+        method: "PATCH",
+      },
+    );
+    const activationResponseBody = await activationResponse.json();
+
+    expect(activationResponse.status).toBe(200);
+    expect(Date.parse(activationResponseBody.used_at)).not.toBeNaN();
+
+    const activatedUser = await user.findOneByUsername("RegistrationFlow");
+    expect(activatedUser.features).toEqual(["create:session"]);
+  });
 
   //TODO test("Login", async () => {});
 

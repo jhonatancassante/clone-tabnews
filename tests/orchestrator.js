@@ -4,8 +4,8 @@ import { faker } from "@faker-js/faker";
 import database from "@/infra/database.js";
 import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
-import seeder from "@/models/seeder";
-import session from "@/models/session";
+import seeder from "@/models/seeder.js";
+import session from "@/models/session.js";
 
 const apiBaseUrl = "http://localhost:3000/api/v1";
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
