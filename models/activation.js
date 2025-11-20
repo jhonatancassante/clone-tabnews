@@ -3,6 +3,7 @@ import dedent from "dedent";
 import email from "@/infra/email.js";
 import database from "@/infra/database.js";
 import webserver from "@/infra/webserver.js";
+import { NotFoundError } from "@/infra/errors.js";
 
 const EXPIRATION_IN_MILLISECONDS = 15 * 60 * 1000; //15 minutos
 
@@ -44,12 +45,12 @@ async function sendEmailToUser(user, activationToken) {
   });
 }
 
-async function findOneByUserId(userId) {
-  const tokenFound = await runSelectQuery(userId);
+async function findOneValidById(tokenId) {
+  const tokenFound = await runSelectQuery(tokenId);
 
   return tokenFound;
 
-  async function runSelectQuery(userId) {
+  async function runSelectQuery(tokenId) {
     const results = await database.query({
       text: `
         SELECT
@@ -57,11 +58,20 @@ async function findOneByUserId(userId) {
         FROM
           user_activation_tokens
         WHERE
-          user_id = $1
+          id = $1
+          AND used_at IS NULL
+          AND expires_at > NOW()
         LIMIT 1
       ;`,
-      values: [userId],
+      values: [tokenId],
     });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O token de ativação não foi encontrado ou expirou.",
+        action: "Faça um novo cadastro.",
+      });
+    }
 
     return results.rows[0];
   }
@@ -70,7 +80,7 @@ async function findOneByUserId(userId) {
 const activation = {
   create,
   sendEmailToUser,
-  findOneByUserId,
+  findOneValidById,
 };
 
 export default activation;
