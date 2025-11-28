@@ -1,9 +1,10 @@
+import { version as uuidVersion } from "uuid";
 import orchestrator from "@/tests/orchestrator.js";
 import webserver from "@/infra/webserver.js";
 import activation from "@/models/activation.js";
+import user from "@/models/user.js";
 
 const activationsApiUrl = `${webserver.origin}/api/v1/activations`;
-const userApiUrl = `${webserver.origin}/api/v1/user`;
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -46,12 +47,8 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
 
       jest.useRealTimers();
 
-      await activation.sendEmailToUser(createdUser, activationToken);
-      const lastEmail = await orchestrator.getLastEmail();
-      const activationTokenId = orchestrator.extractUUID(lastEmail.text);
-
       const response = await fetch(
-        `${activationsApiUrl}/${activationTokenId}`,
+        `${activationsApiUrl}/${activationToken.id}`,
         {
           method: "PATCH",
         },
@@ -68,15 +65,42 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       });
     });
 
+    test("With already used 'token'", async () => {
+      const createdUser = await orchestrator.createUser();
+      const activationToken = await activation.create(createdUser.id);
+
+      const response1 = await fetch(
+        `${activationsApiUrl}/${activationToken.id}`,
+        {
+          method: "PATCH",
+        },
+      );
+      expect(response1.status).toBe(200);
+
+      const response2 = await fetch(
+        `${activationsApiUrl}/${activationToken.id}`,
+        {
+          method: "PATCH",
+        },
+      );
+      expect(response2.status).toBe(404);
+
+      const response2Body = await response2.json();
+
+      expect(response2Body).toEqual({
+        name: "NotFoundError",
+        message: "O token de ativação não foi encontrado ou expirou.",
+        action: "Faça um novo cadastro.",
+        status_code: 404,
+      });
+    });
+
     test("With valid 'token'", async () => {
       const createdUser = await orchestrator.createUser();
       const activationToken = await activation.create(createdUser.id);
-      await activation.sendEmailToUser(createdUser, activationToken);
-      const lastEmail = await orchestrator.getLastEmail();
-      const activationTokenId = orchestrator.extractUUID(lastEmail.text);
 
       const response = await fetch(
-        `${activationsApiUrl}/${activationTokenId}`,
+        `${activationsApiUrl}/${activationToken.id}`,
         {
           method: "PATCH",
         },
@@ -93,6 +117,10 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
+
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(uuidVersion(responseBody.user_id)).toBe(4);
+
       expect(responseBody.used_at).not.toBe(null);
       expect(Date.parse(responseBody.used_at)).not.toBeNaN();
       expect(Date.parse(responseBody.expires_at)).not.toBeNaN();
@@ -100,24 +128,80 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
       expect(responseBody.updated_at > responseBody.created_at).toBe(true);
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const expiresAt = new Date(responseBody.expires_at);
+      const createdAt = new Date(responseBody.created_at);
 
-      const response2 = await fetch(userApiUrl, {
-        headers: {
-          Cookie: `session_id=${sessionObject.token}`,
+      expiresAt.setMilliseconds(0);
+      createdAt.setMilliseconds(0);
+
+      expect(expiresAt - createdAt).toBe(activation.EXPIRATION_IN_MILLISECONDS); // Mantido para estudo de caso
+
+      const diff = Math.abs(
+        expiresAt - createdAt - activation.EXPIRATION_IN_MILLISECONDS,
+      );
+      expect(diff).toBeLessThan(1000);
+
+      const activatedUser = await user.findOneById(responseBody.user_id);
+
+      expect(activatedUser.features).toEqual([
+        "create:session",
+        "read:session",
+      ]);
+    });
+
+    test("With valid 'token' but alread activated user", async () => {
+      const createdUser = await orchestrator.createUser();
+      await orchestrator.activateUser(createdUser.id);
+      const activationToken = await activation.create(createdUser.id);
+
+      const response = await fetch(
+        `${activationsApiUrl}/${activationToken.id}`,
+        {
+          method: "PATCH",
         },
-      });
+      );
 
-      expect(response2.status).toBe(200);
-      const response2Body = await response2.json();
-      expect(response2Body).toEqual({
-        id: createdUser.id,
-        username: createdUser.username,
-        email: createdUser.email,
-        password: createdUser.password,
-        features: ["create:session", "read:session"],
-        created_at: createdUser.created_at.toISOString(),
-        updated_at: response2Body.updated_at,
+      const responseBody = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não pode mais utilizar tokens de ativação.",
+        action: "Entre em contato com o suporte.",
+        status_code: 403,
+      });
+    });
+  });
+
+  describe("Default user", () => {
+    test("With valid 'token' but alredy logged in user", async () => {
+      const user1 = await orchestrator.createUser();
+      await orchestrator.activateUser(user1.id);
+      const sessionObject = await orchestrator.createSession(user1.id);
+
+      const user2 = await orchestrator.createUser();
+      const activationToken = await activation.create(user2.id);
+
+      const response = await fetch(
+        `${activationsApiUrl}/${activationToken.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Cookie: `session_id=${sessionObject.token}`,
+          },
+        },
+      );
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não possui permissão para executar esta ação.",
+        action:
+          'Verifique se o seu usuário possui a feature "read:activation_token".',
+        status_code: 403,
       });
     });
   });

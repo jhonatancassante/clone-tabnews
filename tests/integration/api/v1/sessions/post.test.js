@@ -128,7 +128,7 @@ describe("POST /api/v1/sessions", () => {
         password: process.env.TEST_PASSWORD,
       });
 
-      await orchestrator.activateUser(newUser);
+      await orchestrator.activateUser(newUser.id);
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "POST",
