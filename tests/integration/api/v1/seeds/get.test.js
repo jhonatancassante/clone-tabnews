@@ -1,6 +1,5 @@
 import orchestrator from "tests/orchestrator.js";
-
-const seedQuotesUrl = `${orchestrator.apiBaseUrl}/seeds/quotes`;
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -8,10 +7,10 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("GET /api/v1/seeds", () => {
+describe("GET /api/v1/seeds/quotes", () => {
   describe("Anonymous user", () => {
     test("Retrieving seed status without ran seeds", async () => {
-      const response = await fetch(`${seedQuotesUrl}`);
+      const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`);
       const responseBody = await response.json();
 
       expect(response.status).toBe(200);
@@ -21,7 +20,7 @@ describe("GET /api/v1/seeds", () => {
     test("Retrieving seed status with ran seeds", async () => {
       await orchestrator.runQuotesSeeder();
 
-      const response = await fetch(`${seedQuotesUrl}`);
+      const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`);
       const responseBody = await response.json();
 
       expect(response.status).toBe(200);

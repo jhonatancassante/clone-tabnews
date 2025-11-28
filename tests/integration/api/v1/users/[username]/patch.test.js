@@ -2,6 +2,7 @@ import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
 import user from "models/user.js";
 import password from "models/password.js";
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -13,7 +14,7 @@ describe("PATCH /api/v1/users/[username]", () => {
   describe("Anonymous user", () => {
     test("With nonexistent 'username'", async () => {
       const response = await fetch(
-        "http://localhost:3000/api/v1/users/UsuarioInexistente",
+        `${webserver.origin}/api/v1/users/UsuarioInexistente`,
         {
           method: "PATCH",
         },
@@ -36,7 +37,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response1 = await fetch(
-        "http://localhost:3000/api/v1/users/nullUsername",
+        `${webserver.origin}/api/v1/users/nullUsername`,
         {
           method: "PATCH",
           headers: {
@@ -59,7 +60,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response2 = await fetch(
-        "http://localhost:3000/api/v1/users/nullUsername",
+        `${webserver.origin}/api/v1/users/nullUsername`,
         {
           method: "PATCH",
           headers: {
@@ -91,7 +92,7 @@ describe("PATCH /api/v1/users/[username]", () => {
         username: "user2",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/users/user2", {
+      const response = await fetch(`${webserver.origin}/api/v1/users/user2`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +120,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response1 = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -142,7 +143,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -175,7 +176,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -203,7 +204,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       const newUser = await orchestrator.createUser();
 
       const response1 = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -226,7 +227,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response2 = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -253,7 +254,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       const newUser = await orchestrator.createUser();
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -289,7 +290,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       const newUser = await orchestrator.createUser();
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -325,7 +326,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       const newUser = await orchestrator.createUser();
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {
@@ -378,7 +379,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/users/${newUser.username}`,
+        `${webserver.origin}/api/v1/users/${newUser.username}`,
         {
           method: "PATCH",
           headers: {

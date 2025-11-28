@@ -1,7 +1,6 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
-
-const quotesUrl = `${orchestrator.apiBaseUrl}/quotes`;
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -13,7 +12,7 @@ beforeAll(async () => {
 describe("GET /api/v1/quotes", () => {
   describe("Anonymous user", () => {
     test("Retrive one random quote", async () => {
-      const response = await fetch(quotesUrl);
+      const response = await fetch(`${webserver.origin}/api/v1/quotes`);
       const quoteBody = await response.json();
 
       expect(response.status).toBe(200);

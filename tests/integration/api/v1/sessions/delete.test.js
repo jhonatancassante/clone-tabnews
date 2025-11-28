@@ -3,8 +3,7 @@ import setCookieParser from "set-cookie-parser";
 
 import orchestrator from "@/tests/orchestrator.js";
 import session from "@/models/session.js";
-
-const sessionsApiUrl = `${orchestrator.apiBaseUrl}/sessions`;
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -12,12 +11,12 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("DELETE /api/v1/user", () => {
+describe("DELETE /api/v1/sessions", () => {
   describe("Default user", () => {
     test("With nonexistent session", async () => {
       const invalidToken = "this-token-does-not-exist-in-database";
 
-      const response = await fetch(sessionsApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "DELETE",
         headers: {
           Cookie: `session_id=${invalidToken}`,
@@ -48,7 +47,7 @@ describe("DELETE /api/v1/user", () => {
 
       jest.useRealTimers();
 
-      const response = await fetch(sessionsApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "DELETE",
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
@@ -71,7 +70,7 @@ describe("DELETE /api/v1/user", () => {
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
-      const response = await fetch(sessionsApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "DELETE",
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
@@ -117,7 +116,7 @@ describe("DELETE /api/v1/user", () => {
 
       // Double check assertions
       const doubleCheckResponse = await fetch(
-        `${orchestrator.apiBaseUrl}/user`,
+        `${webserver.origin}/api/v1/user`,
         {
           headers: {
             Cookie: `session_id=${sessionObject.token}`,
