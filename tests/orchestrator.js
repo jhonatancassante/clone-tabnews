@@ -6,6 +6,7 @@ import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
 import seeder from "@/models/seeder.js";
 import session from "@/models/session.js";
+import activation from "@/models/activation.js";
 
 const apiBaseUrl = "http://localhost:3000/api/v1";
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
@@ -66,6 +67,10 @@ async function createUser(userObject) {
   });
 }
 
+async function activateUser(user) {
+  await activation.activateUserByUserId(user.id);
+}
+
 async function createSession(userId) {
   return await session.create(userId);
 }
@@ -110,6 +115,7 @@ const orchestrator = {
   runPendingMigrations,
   runQuotesSeeder,
   createUser,
+  activateUser,
   createSession,
   deleteAllEmails,
   getLastEmail,

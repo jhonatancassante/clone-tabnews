@@ -93,11 +93,42 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
+    test("With correct `email` and correct `password` but not actived user", async () => {
+      await orchestrator.createUser({
+        email: "usuario.inativo@live.com",
+        password: process.env.TEST_PASSWORD,
+      });
+
+      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "usuario.inativo@live.com",
+          password: process.env.TEST_PASSWORD,
+        }),
+      });
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não possui permissão para fazer login.",
+        action: "Contate o suporte caso você acredite que isto seja um erro.",
+        status_code: 403,
+      });
+    });
+
     test("With correct `email` and correct `password`", async () => {
       const newUser = await orchestrator.createUser({
         email: "tudo.correto@live.com",
         password: process.env.TEST_PASSWORD,
       });
+
+      await orchestrator.activateUser(newUser);
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "POST",
