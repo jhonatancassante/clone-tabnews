@@ -1,4 +1,40 @@
+import { InternalServerError } from "@/infra/errors.js";
+
+const avaliableFeatures = [
+  //user
+  "create:user",
+  "read:user",
+  "read:user:self",
+  "update:user",
+  "update:user:others",
+
+  //session
+  "create:session",
+  "read:session",
+
+  //activation token
+  "read:activation_token",
+
+  //migration
+  "create:migration",
+  "read:migration",
+
+  //quote
+  "read:quote",
+
+  //seed
+  "create:seed",
+  "read:seed",
+
+  //status
+  "read:status",
+  "read:status:all",
+];
+
 function can(user, feature, resource) {
+  validateUser(user);
+  validateFeature(feature);
+
   let authorized = false;
 
   if (user.features.includes(feature)) {
@@ -18,6 +54,10 @@ function can(user, feature, resource) {
 }
 
 function filterOutput(user, feature, resource) {
+  validateUser(user);
+  validateFeature(feature);
+  validateResource(resource);
+
   if (feature === "read:user") {
     return {
       id: resource.id,
@@ -103,6 +143,30 @@ function filterOutput(user, feature, resource) {
     }
 
     return output;
+  }
+}
+
+function validateUser(user) {
+  if (!user || !user.features) {
+    throw new InternalServerError({
+      cause: "É necessário um usuário para verificar as autorizações.",
+    });
+  }
+}
+
+function validateFeature(feature) {
+  if (!feature || !avaliableFeatures.includes(feature)) {
+    throw new InternalServerError({
+      cause: "É necessário uma feature válida para verificar as autorizações.",
+    });
+  }
+}
+
+function validateResource(resource) {
+  if (!resource) {
+    throw new InternalServerError({
+      cause: "É necessário um recurso para verificar as autorizações.",
+    });
   }
 }
 
