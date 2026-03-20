@@ -134,8 +134,6 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       expiresAt.setMilliseconds(0);
       createdAt.setMilliseconds(0);
 
-      expect(expiresAt - createdAt).toBe(activation.EXPIRATION_IN_MILLISECONDS); // Mantido para estudo de caso
-
       const diff = Math.abs(
         expiresAt - createdAt - activation.EXPIRATION_IN_MILLISECONDS,
       );

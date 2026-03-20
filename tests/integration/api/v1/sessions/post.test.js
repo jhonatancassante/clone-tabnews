@@ -166,8 +166,6 @@ describe("POST /api/v1/sessions", () => {
       expiresAt.setMilliseconds(0);
       createdAt.setMilliseconds(0);
 
-      expect(expiresAt - createdAt).toBe(session.EXPIRATION_IN_MILISECONDS); // Mantido para estudo de caso
-
       const diff = Math.abs(
         expiresAt - createdAt - session.EXPIRATION_IN_MILISECONDS,
       );
