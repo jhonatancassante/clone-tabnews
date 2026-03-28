@@ -12,7 +12,7 @@ beforeAll(async () => {
 
 describe("PATCH /api/v1/users/[username]", () => {
   describe("Anonymous user", () => {
-    test("With unique 'username'", async () => {
+    test("With unique `username`", async () => {
       const newUser = await orchestrator.createUser();
 
       const response = await fetch(
@@ -42,7 +42,7 @@ describe("PATCH /api/v1/users/[username]", () => {
   });
 
   describe("Default user", () => {
-    test("With nonexistent 'username'", async () => {
+    test("With nonexistent `username`", async () => {
       const createdUser = await orchestrator.createUser();
       const activatedUser = await orchestrator.activateUser(createdUser.id);
       const sessionObject = await orchestrator.createSession(activatedUser.id);
@@ -68,7 +68,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With null or empty 'username'", async () => {
+    test("With null or empty `username`", async () => {
       const createdUser = await orchestrator.createUser();
       const activatedUser = await orchestrator.activateUser(createdUser.id);
       const sessionObject = await orchestrator.createSession(activatedUser.id);
@@ -122,7 +122,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With duplicated 'username'", async () => {
+    test("With duplicated `username`", async () => {
       await orchestrator.createUser({
         username: "user1",
       });
@@ -159,7 +159,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With 'userB' targeting 'userA'", async () => {
+    test("With `userB` targeting `userA`", async () => {
       await orchestrator.createUser({
         username: "userA",
       });
@@ -197,7 +197,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With null or empty 'email'", async () => {
+    test("With null or empty `email`", async () => {
       const createdUser = await orchestrator.createUser({
         email: "nullEmail@live.com",
       });
@@ -253,7 +253,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With duplicated 'email'", async () => {
+    test("With duplicated `email`", async () => {
       await orchestrator.createUser({
         email: "email1@live.com",
       });
@@ -293,7 +293,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With null or empty 'password'", async () => {
+    test("With null or empty `password`", async () => {
       const newUser = await orchestrator.createUser();
 
       const activatedNewUser = await orchestrator.activateUser(newUser.id);
@@ -350,7 +350,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       });
     });
 
-    test("With unique 'username'", async () => {
+    test("With unique `username`", async () => {
       const newUser = await orchestrator.createUser();
       const activatedNewUser = await orchestrator.activateUser(newUser.id);
       const sessionObject = await orchestrator.createSession(
@@ -389,7 +389,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody.updated_at > responseBody.created_at).toBe(true);
     });
 
-    test("With unique 'email'", async () => {
+    test("With unique `email`", async () => {
       const newUser = await orchestrator.createUser();
       const activatedNewUser = await orchestrator.activateUser(newUser.id);
       const sessionObject = await orchestrator.createSession(
@@ -428,7 +428,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody.updated_at > responseBody.created_at).toBe(true);
     });
 
-    test("With new 'password'", async () => {
+    test("With new `password`", async () => {
       const newUser = await orchestrator.createUser();
       const activatedNewUser = await orchestrator.activateUser(newUser.id);
       const sessionObject = await orchestrator.createSession(
@@ -482,7 +482,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(incorrectPasswordMatch).toBe(false);
     });
 
-    test("With no match case in 'username'", async () => {
+    test("With no match case in `username`", async () => {
       const newUser = await orchestrator.createUser({
         username: "updatenomatchcaseusername",
       });
@@ -524,7 +524,7 @@ describe("PATCH /api/v1/users/[username]", () => {
   });
 
   describe("Privileged user", () => {
-    test("With 'update:user:others' targeting 'defaultUser'", async () => {
+    test("With `update:user:others` targeting `defaultUser`", async () => {
       const privilegedUser = await orchestrator.createUser();
       const activatedprivilegedUser = await orchestrator.activateUser(
         privilegedUser.id,

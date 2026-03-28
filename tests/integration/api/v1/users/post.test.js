@@ -56,7 +56,7 @@ describe("POST /api/v1/users", () => {
       expect(incorrectPasswordMatch).toBe(false);
     });
 
-    test("With duplicated 'email'", async () => {
+    test("With duplicated `email`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -95,7 +95,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With duplicated 'username'", async () => {
+    test("With duplicated `username`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -134,7 +134,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With null or empty 'username'", async () => {
+    test("With null or empty `username`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -180,7 +180,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With null or empty 'email'", async () => {
+    test("With null or empty `email`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -226,7 +226,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With null or empty 'password'", async () => {
+    test("With null or empty `password`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
