@@ -2,6 +2,7 @@ import { version as uuidVersion } from "uuid";
 import setCookieParser from "set-cookie-parser";
 import orchestrator from "tests/orchestrator.js";
 import session from "@/models/session.js";
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -11,12 +12,12 @@ beforeAll(async () => {
 
 describe("POST /api/v1/sessions", () => {
   describe("Anonymous user", () => {
-    test("With incorrect `email` but correct `password`", async () => {
+    test("With incorrect 'email' but correct 'password'", async () => {
       await orchestrator.createUser({
         password: process.env.TEST_PASSWORD + "Senha_Correta",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,12 +40,12 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With correct `email` but incorrect `password`", async () => {
+    test("With correct 'email' but incorrect 'password'", async () => {
       await orchestrator.createUser({
         email: "email.correto@live.com",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,10 +68,10 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With incorrect `email` and incorrect `password`", async () => {
+    test("With incorrect 'email' and incorrect 'password'", async () => {
       await orchestrator.createUser();
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,13 +94,44 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With correct `email` and correct `password`", async () => {
+    test("With correct 'email' and correct 'password' but not actived user", async () => {
+      await orchestrator.createUser({
+        email: "usuario.inativo@live.com",
+        password: process.env.TEST_PASSWORD,
+      });
+
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "usuario.inativo@live.com",
+          password: process.env.TEST_PASSWORD,
+        }),
+      });
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não possui permissão para fazer login.",
+        action: "Contate o suporte caso você acredite que isto seja um erro.",
+        status_code: 403,
+      });
+    });
+
+    test("With correct 'email' and correct 'password'", async () => {
       const newUser = await orchestrator.createUser({
         email: "tudo.correto@live.com",
         password: process.env.TEST_PASSWORD,
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      await orchestrator.activateUser(newUser.id);
+
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,8 +165,6 @@ describe("POST /api/v1/sessions", () => {
 
       expiresAt.setMilliseconds(0);
       createdAt.setMilliseconds(0);
-
-      expect(expiresAt - createdAt).toBe(session.EXPIRATION_IN_MILISECONDS); // Mantido para estudo de caso
 
       const diff = Math.abs(
         expiresAt - createdAt - session.EXPIRATION_IN_MILISECONDS,

@@ -118,9 +118,11 @@ function DatabaseStatus({ database }) {
           <strong>Banco de dados</strong>
         </summary>
         <ul>
-          <li>
-            <strong>Versão:</strong> {version}
-          </li>
+          {version && (
+            <li>
+              <strong>Versão:</strong> {version}
+            </li>
+          )}
           <li>
             <strong>Limite de Conexões:</strong> {maxConnections}
           </li>

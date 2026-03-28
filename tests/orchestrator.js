@@ -4,10 +4,11 @@ import { faker } from "@faker-js/faker";
 import database from "@/infra/database.js";
 import migrator from "@/models/migrator.js";
 import user from "@/models/user.js";
-import seeder from "@/models/seeder";
-import session from "@/models/session";
+import seeder from "@/models/seeder.js";
+import session from "@/models/session.js";
+import activation from "@/models/activation.js";
+import webserver from "@/infra/webserver.js";
 
-const apiBaseUrl = "http://localhost:3000/api/v1";
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
 async function waitForAllServices() {
@@ -21,7 +22,7 @@ async function waitForAllServices() {
     });
 
     async function fetchStatusPage() {
-      const response = await fetch("http://localhost:3000/api/v1/status");
+      const response = await fetch(`${webserver.origin}/api/v1/status`);
 
       if (!response.ok) {
         throw Error();
@@ -66,6 +67,10 @@ async function createUser(userObject) {
   });
 }
 
+async function activateUser(userId) {
+  return await activation.activateUserByUserId(userId);
+}
+
 async function createSession(userId) {
   return await session.create(userId);
 }
@@ -81,6 +86,10 @@ async function getLastEmail() {
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
 
+  if (!lastEmailItem) {
+    return null;
+  }
+
   const emailTextResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
@@ -90,16 +99,33 @@ async function getLastEmail() {
   return lastEmailItem;
 }
 
+function extractUUID(text) {
+  const regex =
+    /\/cadastro\/ativar\/([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12})/i;
+
+  const matchedText = text.match(regex);
+
+  return matchedText && matchedText[1] ? matchedText[1] : null;
+}
+
+async function addFeaturesToUser(userObject, features) {
+  const updatedUser = await user.addFeatures(userObject.id, features);
+
+  return updatedUser;
+}
+
 const orchestrator = {
-  apiBaseUrl,
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
   runQuotesSeeder,
   createUser,
+  activateUser,
   createSession,
   deleteAllEmails,
   getLastEmail,
+  extractUUID,
+  addFeaturesToUser,
 };
 
 export default orchestrator;

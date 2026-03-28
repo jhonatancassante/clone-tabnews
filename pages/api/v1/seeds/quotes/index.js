@@ -5,32 +5,43 @@ import seeder from "@/models/seeder.js";
 
 const router = createRouter();
 
-router.get(getHandler);
-router.post(postHandler);
+router.use(controller.injectAnonymousOrUser);
+router.get(controller.canRequest("read:seed"), getHandler);
+router.post(controller.canRequest("create:seed"), postHandler);
 
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
   const quotesCount = await quote.verify();
-  const message =
-    quotesCount === 0
-      ? "Quotes haven’t been run yet."
-      : "Quotes have already been run.";
 
-  return response.status(200).json({ message });
+  const secureOutputValues = {
+    message:
+      quotesCount === 0
+        ? "Quotes haven’t been run yet."
+        : "Quotes have already been run.",
+  };
+
+  return response.status(200).json(secureOutputValues);
 }
 
 async function postHandler(request, response) {
   const quotesCount = await seeder.runQuotesSeed();
 
+  let statusCode;
+  let message;
+
   if (quotesCount < 0) {
-    return response.status(200).json({
-      message: "Quotes have already been run.",
-    });
+    message = "Quotes have already been run.";
+    statusCode = 200;
+  } else {
+    message = "All Quotes ran successfully.";
+    statusCode = 201;
   }
 
-  return response.status(201).json({
-    message: "All Quotes ran successfully.",
-    quotesCount,
-  });
+  const secureOutputValues = {
+    message,
+    ...(quotesCount > 0 && { quotesCount }),
+  };
+
+  return response.status(statusCode).json(secureOutputValues);
 }

@@ -3,8 +3,7 @@ import setCookieParser from "set-cookie-parser";
 
 import orchestrator from "tests/orchestrator.js";
 import session from "@/models/session.js";
-
-const userApiUrl = `${orchestrator.apiBaseUrl}/user`;
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -13,15 +12,34 @@ beforeAll(async () => {
 });
 
 describe("GET /api/v1/user", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving the endpoint", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/user`);
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não possui permissão para executar esta ação.",
+        action: 'Verifique se o seu usuário possui a feature "read:session".',
+        status_code: 403,
+      });
+    });
+  });
+
   describe("Default user", () => {
     test("With valid session", async () => {
       const createdUser = await orchestrator.createUser({
         username: "UserWithValidSession",
       });
 
+      const activatedUser = await orchestrator.activateUser(createdUser.id);
+
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
-      const response = await fetch(userApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },
@@ -39,14 +57,15 @@ describe("GET /api/v1/user", () => {
         id: createdUser.id,
         username: "UserWithValidSession",
         email: createdUser.email,
-        password: createdUser.password,
+        features: ["create:session", "read:session", "update:user"],
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+      expect(responseBody.updated_at > responseBody.created_at).toBe(true);
 
       // Session renewal assertions
       const renewedSessionObject = await session.findOneValidByToken(
@@ -73,7 +92,7 @@ describe("GET /api/v1/user", () => {
       });
     });
 
-    test("With a valid session created previously and renewed", async () => {
+    test("With a halfway-expired session", async () => {
       const currentDate = new Date();
       jest.useFakeTimers({
         now: new Date(currentDate - session.EXPIRATION_IN_MILISECONDS + 10000),
@@ -83,11 +102,13 @@ describe("GET /api/v1/user", () => {
         username: "UserWithValidSessionInPast",
       });
 
+      const activatedUser = await orchestrator.activateUser(createdUser.id);
+
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
       jest.useRealTimers();
 
-      const response = await fetch(userApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },
@@ -100,14 +121,15 @@ describe("GET /api/v1/user", () => {
         id: createdUser.id,
         username: "UserWithValidSessionInPast",
         email: createdUser.email,
-        password: createdUser.password,
+        features: ["create:session", "read:session", "update:user"],
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+      expect(responseBody.updated_at > responseBody.created_at).toBe(true);
 
       // Session renewal assertions
       const renewedSessionObject = await session.findOneValidByToken(
@@ -137,7 +159,7 @@ describe("GET /api/v1/user", () => {
     test("With nonexistent session", async () => {
       const invalidToken = "this-token-does-not-exist-in-database";
 
-      const response = await fetch(userApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${invalidToken}`,
         },
@@ -181,7 +203,7 @@ describe("GET /api/v1/user", () => {
 
       jest.useRealTimers();
 
-      const response = await fetch(userApiUrl, {
+      const response = await fetch(`${webserver.origin}/api/v1/user`, {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },

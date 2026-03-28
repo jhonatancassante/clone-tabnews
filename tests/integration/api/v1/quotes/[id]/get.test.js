@@ -1,7 +1,6 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
-
-const quotesUrl = `${orchestrator.apiBaseUrl}/quotes`;
+import webserver from "@/infra/webserver.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -13,10 +12,12 @@ beforeAll(async () => {
 describe("GET /api/v1/quotes", () => {
   describe("Anonymous user", () => {
     test("Retrive a quote by id", async () => {
-      const randomQuote = await fetch(`${quotesUrl}`);
+      const randomQuote = await fetch(`${webserver.origin}/api/v1/quotes`);
       const randomQuoteBody = await randomQuote.json();
 
-      const response = await fetch(`${quotesUrl}/${randomQuoteBody.id}`);
+      const response = await fetch(
+        `${webserver.origin}/api/v1/quotes/${randomQuoteBody.id}`,
+      );
       const responseBody = await response.json();
 
       expect(response.status).toBe(200);
@@ -39,7 +40,9 @@ describe("GET /api/v1/quotes", () => {
 
     test("With ID is invalid or not found", async () => {
       const invalidId = "12345678-1234-4234-8234-123456789012";
-      const response = await fetch(`${quotesUrl}/${invalidId}`);
+      const response = await fetch(
+        `${webserver.origin}/api/v1/quotes/${invalidId}`,
+      );
 
       expect(response.status).toBe(404);
       const responseBody = await response.json();
