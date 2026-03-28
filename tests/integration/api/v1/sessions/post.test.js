@@ -12,7 +12,7 @@ beforeAll(async () => {
 
 describe("POST /api/v1/sessions", () => {
   describe("Anonymous user", () => {
-    test("With incorrect 'email' but correct 'password'", async () => {
+    test("With incorrect `email` but correct `password`", async () => {
       await orchestrator.createUser({
         password: process.env.TEST_PASSWORD + "Senha_Correta",
       });
@@ -40,7 +40,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With correct 'email' but incorrect 'password'", async () => {
+    test("With correct `email` but incorrect `password`", async () => {
       await orchestrator.createUser({
         email: "email.correto@live.com",
       });
@@ -68,7 +68,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With incorrect 'email' and incorrect 'password'", async () => {
+    test("With incorrect `email` and incorrect `password`", async () => {
       await orchestrator.createUser();
 
       const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
@@ -94,7 +94,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With correct 'email' and correct 'password' but not actived user", async () => {
+    test("With correct `email` and correct `password` but not actived user", async () => {
       await orchestrator.createUser({
         email: "usuario.inativo@live.com",
         password: process.env.TEST_PASSWORD,
@@ -123,13 +123,13 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With correct 'email' and correct 'password'", async () => {
+    test("With correct `email` and correct `password`", async () => {
       const newUser = await orchestrator.createUser({
         email: "tudo.correto@live.com",
         password: process.env.TEST_PASSWORD,
       });
 
-      await orchestrator.activateUser(newUser.id);
+      await orchestrator.activateUser(newUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
@@ -160,16 +160,26 @@ describe("POST /api/v1/sessions", () => {
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
 
+      // `expires_at` é calculado na aplicação antes da persistência.
+      // `created_at` é calculado depois na camada do banco de dados.
+      // Por isso, o tempo real entre as duas datas pode ficar ligeiramente
+      // menor do que o tempo de expiração configurado e não bater 30 dias nos
+      // milissegundos caso seja calculado apenas `expires_at` - `created_at`.
+      // Então a ideia é garantir que no momento `expires_at` seja maior que
+      // `created_at`, e também que possa existir distância de até 5 segundo
+      // entre as duas datas para cobrir o caso do banco sofrer algum load
+      // inesperado nos testes.
+
       const expiresAt = new Date(responseBody.expires_at);
       const createdAt = new Date(responseBody.created_at);
 
-      expiresAt.setMilliseconds(0);
-      createdAt.setMilliseconds(0);
+      expect(expiresAt >= createdAt).toBe(true);
 
-      const diff = Math.abs(
-        expiresAt - createdAt - session.EXPIRATION_IN_MILISECONDS,
-      );
-      expect(diff).toBeLessThan(1000);
+      const actualLifetimeInMilliseconds = expiresAt - createdAt;
+      const lifetimeDifferenceInMilliseconds =
+        session.EXPIRATION_IN_MILISECONDS - actualLifetimeInMilliseconds;
+
+      expect(lifetimeDifferenceInMilliseconds).toBeLessThanOrEqual(5000);
 
       const parsedSetCookie = setCookieParser(response, {
         map: true,

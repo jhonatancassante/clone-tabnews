@@ -3,13 +3,11 @@ import controller from "@/infra/controller.js";
 import quote from "@/models/quote.js";
 import seeder from "@/models/seeder.js";
 
-const router = createRouter();
-
-router.use(controller.injectAnonymousOrUser);
-router.get(controller.canRequest("read:seed"), getHandler);
-router.post(controller.canRequest("create:seed"), postHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter()
+  .use(controller.injectAnonymousOrUser)
+  .get(controller.canRequest("read:seed"), getHandler)
+  .post(controller.canRequest("create:seed"), postHandler)
+  .handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
   const quotesCount = await quote.verify();

@@ -31,8 +31,8 @@ describe("POST /api/v1/seeds/quotes", () => {
   describe("Default user", () => {
     test("Running pending seeds", async () => {
       const createdUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createdUser.id);
-      const sessionObject = await orchestrator.createSession(activatedUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
+      const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`, {
         method: "POST",
@@ -56,11 +56,10 @@ describe("POST /api/v1/seeds/quotes", () => {
     describe("Running pending seeds", () => {
       test("Run seeds successfully for the first time", async () => {
         const createdUser = await orchestrator.createUser();
-        const activatedUser = await orchestrator.activateUser(createdUser.id);
+        const activatedUser = await orchestrator.activateUser(createdUser);
         await orchestrator.addFeaturesToUser(createdUser, ["create:seed"]);
-        const createdUserSession = await orchestrator.createSession(
-          activatedUser.id,
-        );
+        const createdUserSession =
+          await orchestrator.createSession(activatedUser);
 
         const response = await fetch(
           `${webserver.origin}/api/v1/seeds/quotes`,
@@ -82,11 +81,10 @@ describe("POST /api/v1/seeds/quotes", () => {
         await orchestrator.runQuotesSeeder();
 
         const createdUser = await orchestrator.createUser();
-        const activatedUser = await orchestrator.activateUser(createdUser.id);
+        const activatedUser = await orchestrator.activateUser(createdUser);
         await orchestrator.addFeaturesToUser(createdUser, ["create:seed"]);
-        const createdUserSession = await orchestrator.createSession(
-          activatedUser.id,
-        );
+        const createdUserSession =
+          await orchestrator.createSession(activatedUser);
 
         const secondResponse = await fetch(
           `${webserver.origin}/api/v1/seeds/quotes`,
