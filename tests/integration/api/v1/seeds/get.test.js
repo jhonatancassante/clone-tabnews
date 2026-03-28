@@ -27,8 +27,8 @@ describe("GET /api/v1/seeds/quotes", () => {
   describe("Default user", () => {
     test("Retrieving seed status", async () => {
       const createdUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createdUser.id);
-      const sessionObject = await orchestrator.createSession(activatedUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
+      const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`, {
         headers: {
@@ -51,11 +51,10 @@ describe("GET /api/v1/seeds/quotes", () => {
   describe("Privileged user", () => {
     test("Retrieving seed status without ran seeds", async () => {
       const createdUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createdUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
       await orchestrator.addFeaturesToUser(createdUser, ["read:seed"]);
-      const createdUserSession = await orchestrator.createSession(
-        activatedUser.id,
-      );
+      const createdUserSession =
+        await orchestrator.createSession(activatedUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`, {
         headers: {
@@ -71,11 +70,10 @@ describe("GET /api/v1/seeds/quotes", () => {
     test("Retrieving seed status with ran seeds", async () => {
       await orchestrator.runQuotesSeeder();
       const createdUser = await orchestrator.createUser();
-      const activatedUser = await orchestrator.activateUser(createdUser.id);
+      const activatedUser = await orchestrator.activateUser(createdUser);
       await orchestrator.addFeaturesToUser(createdUser, ["read:seed"]);
-      const createdUserSession = await orchestrator.createSession(
-        activatedUser.id,
-      );
+      const createdUserSession =
+        await orchestrator.createSession(activatedUser);
 
       const response = await fetch(`${webserver.origin}/api/v1/seeds/quotes`, {
         headers: {
